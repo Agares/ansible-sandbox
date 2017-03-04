@@ -1,0 +1,82 @@
+- hosts: swarm
+  become: yes
+  become_user: root
+  tasks:
+    - name: install packages required to install docker
+      action: apt pkg={{item}} state=installed
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - python-software-properties
+
+    - name: add docker gpg key
+      apt_key:
+        url: "https://download.docker.com/linux/debian/gpg"
+        state: present
+
+    - name: add docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian jessie stable
+        state: present
+
+    - name: update apt
+      apt:
+        update_cache: yes
+    - name: upgrade system
+      apt:
+        upgrade: dist
+    - name: install docker
+      apt:
+        name: docker-ce
+        state: latest
+        install_recommends: no
+
+- hosts: swarm-head
+  become: yes
+  become_user: root
+  tasks:
+    - name: initialize swarm
+      command: docker swarm init --advertise-addr eth1
+
+    - debug: 
+        msg: "The keys for swarm workers and managers will now be generated. You must create a file named swarm_keys.yml, and put them under keys swarm_token_worker and swarm_token_manager"
+    - name: save join token (worker)
+      command: docker swarm join-token -q worker
+      register: swarm_token_worker
+
+    - debug: 
+        msg: "Token for worker: {{ swarm_token_worker.stdout }}"
+
+    - name: show join token (manager)
+      command: docker swarm join-token -q manager
+      register: swarm_token_manager
+
+    - debug: 
+        msg: "Token for manager: {{ swarm_token_manager.stdout }}"
+
+- hosts: swarm-leader
+  remote_user: root
+  become: yes
+  become_user: root
+  tasks:
+    - name: include swarm keys
+      include_vars: 
+        dir: '.'
+        files_matching: 'swarm_keys.yml'
+
+    - name: join swarm as leader
+      command: "docker swarm join 10.69.55.69:2377 --advertise-addr eth1 --token {{ swarm_token_manager }}"
+
+- hosts: swarm-follower
+  remote_user: root
+  become: yes
+  become_user: root
+  tasks:
+    - name: include swarm keys
+      include_vars:
+        dir: '.'
+        files_matching: 'swarm_keys.yml'
+
+    - name: join swarm as leader
+      command: "docker swarm join 10.69.55.69:2377 --advertise-addr eth1 --token {{ swarm_token_worker }}"
