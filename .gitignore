@@ -1,3 +1,4 @@
-swarm_keys.yml
+group_vars/**
 site.retry
 .vagrant/
+!.gitkeep

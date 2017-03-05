@@ -1,0 +1,7 @@
+- hosts: swarm-workers
+  become: true
+  become_user: root
+  roles:
+    - common
+    - docker
+    - swarm-worker

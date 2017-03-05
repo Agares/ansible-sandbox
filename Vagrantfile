@@ -11,15 +11,15 @@ Vagrant.configure("2") do |config|
 				"node-4", 
 				"node-5"
 		],
-		"swarm-manager" => [
+		"swarm-managers" => [
 				"node-3", 
 				"node-5"
 		],
-		"swarm-worker"  => [
+		"swarm-workers"  => [
 				"node-2", 
 				"node-4"
 		],
-		"swarm-head"    => [
+		"swarm-heads"    => [
 				"node-1"
 		]
 	}

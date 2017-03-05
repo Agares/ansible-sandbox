@@ -1,0 +1,2 @@
+- name: join swarm as manager
+  command: "docker swarm join 10.69.55.69:2377 --advertise-addr eth1 --token {{ swarm_token_manager }}"

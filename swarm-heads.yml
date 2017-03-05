@@ -1,0 +1,7 @@
+- hosts: swarm-heads
+  become: true
+  become_user: root
+  roles:
+    - common
+    - docker
+    - swarm-head

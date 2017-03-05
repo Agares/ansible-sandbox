@@ -1,0 +1,18 @@
+- name: initialize swarm
+  command: docker swarm init --advertise-addr eth1
+
+- debug: 
+    msg: "The keys for swarm workers and managers will now be generated. You must create a file group_vars/all, and put them under keys swarm_token_worker and swarm_token_manager"
+- name: save join token (worker)
+  command: docker swarm join-token -q worker
+  register: swarm_token_worker
+
+- debug: 
+    msg: "Token for worker: {{ swarm_token_worker.stdout }}"
+
+- name: show join token (manager)
+  command: docker swarm join-token -q manager
+  register: swarm_token_manager
+
+- debug: 
+    msg: "Token for manager: {{ swarm_token_manager.stdout }}"
