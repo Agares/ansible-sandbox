@@ -55,7 +55,7 @@
     - debug: 
         msg: "Token for manager: {{ swarm_token_manager.stdout }}"
 
-- hosts: swarm-leader
+- hosts: swarm-manager
   remote_user: root
   become: yes
   become_user: root
@@ -65,10 +65,10 @@
         dir: '.'
         files_matching: 'swarm_keys.yml'
 
-    - name: join swarm as leader
+    - name: join swarm as manager
       command: "docker swarm join 10.69.55.69:2377 --advertise-addr eth1 --token {{ swarm_token_manager }}"
 
-- hosts: swarm-follower
+- hosts: swarm-worker
   remote_user: root
   become: yes
   become_user: root
@@ -78,5 +78,5 @@
         dir: '.'
         files_matching: 'swarm_keys.yml'
 
-    - name: join swarm as leader
+    - name: join swarm as worker
       command: "docker swarm join 10.69.55.69:2377 --advertise-addr eth1 --token {{ swarm_token_worker }}"

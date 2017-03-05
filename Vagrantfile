@@ -4,10 +4,24 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
      ansible.playbook = "site.yml"
 	 ansible.groups = {
-		"swarm" => ["node-1", "node-2", "node-3", "node-4", "node-5"],
-		"swarm-leader" => ["node-3", "node-5"],
-		"swarm-follower" => ["node-2", "node-4"],
-		"swarm-head" => ["node-1"]
+		"swarm"         => [
+				"node-1", 
+				"node-2", 
+				"node-3", 
+				"node-4", 
+				"node-5"
+		],
+		"swarm-manager" => [
+				"node-3", 
+				"node-5"
+		],
+		"swarm-worker"  => [
+				"node-2", 
+				"node-4"
+		],
+		"swarm-head"    => [
+				"node-1"
+		]
 	}
   end
 
